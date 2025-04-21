@@ -5,8 +5,8 @@ version: "3.7"
 services:
 #service-1 item-app
   item-app:
-    #Menggunakan image item-app dari Docker Hub / GitHub Packages bila menerapkan saran keempat.
-    image: ghcr.io/andiyudi/item-app:latest
+    #Menggunakan image item-app dari GitHub Packages bila menerapkan saran keempat.
+    image: ghcr.io/andiyudi/item-app:v1
     #Melakukan port mapping agar dapat diakses dari port 80 di host.
     ports:
       - "80:8080"

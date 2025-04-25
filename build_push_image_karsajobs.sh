@@ -1,6 +1,6 @@
 #Perintah untuk build Docker image dari berkas Dockerfile yang disediakan dengan nama karsajobs:latest (untuk backend).
 echo "Building Docker image for GitHub Package..."
-sudo docker build -t ghcr.io/andiyudi/karsajobs:latest -f Dockerfile .
+sudo docker build -t ghcr.io/andiyudi/karsajobs:latest
 
 #Perintah untuk login ke GitHub Package.
 echo "Logging in to GitHub Package..."

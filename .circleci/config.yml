@@ -1,0 +1,55 @@
+# CircleCI configuration version
+version: 2.1
+# Job definitions
+jobs:
+  # Job to lint Dockerfile using Hadolint
+  lint-dockerfile:
+    docker:
+      # Base image for the container
+      - image: cimg/base:stable
+    steps:
+      # Check out the code from repository
+      - checkout
+      - run:
+          name: Install Hadolint
+          # Download Hadolint binary, Make it executable, and Run Hadolint against Dockerfile
+          command: |
+            curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o hadolint
+            chmod +x hadolint
+            ./hadolint Dockerfile
+  # Job to run Go unit tests
+  test-app:
+    docker:
+      # Official Go image based on Debian bullseye
+      - image: golang:1.19-bullseye
+    steps:
+      - checkout
+      - run:
+          name: Run Unit Tests
+          # Run Go tests with verbose output, short mode, and disable caching
+          command: go test -v -short --count=1 $(go list ./...)
+  # Job to build and push Docker image
+  build-app-karsajobs:
+    docker:
+      # Official Docker image
+      - image: docker:stable
+    steps:
+      - checkout
+      # Required for Docker-in-Docker (DinD) setup
+      - setup_remote_docker
+      - run:
+          name: Build and Push Image
+          # Build Docker image and push to GitHub Container Registry
+          command: |
+            docker build -t ghcr.io/andiyudi/karsajobs:latest .
+            echo "$PAT2" | docker login ghcr.io -u andiyudi --password-stdin
+            docker push ghcr.io/andiyudi/karsajobs:latest
+# Workflow definition
+workflows:
+  version: 2
+  backend-ci:
+    jobs:
+      # Jobs will run in parallel by default
+      - lint-dockerfile
+      - test-app
+      - build-app-karsajobs

@@ -1,0 +1,43 @@
+# CircleCI configuration version
+version: 2.1
+# Job definitions
+jobs:
+  # Job to lint Dockerfile using Hadolint
+  lint-dockerfile:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      # Check out the code from repository
+      - checkout
+      - run:
+          name: Install Hadolint
+          # Download Hadolint binary, Make it executable, and Run Hadolint against Dockerfile
+          command: |
+            curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o hadolint
+            chmod +x hadolint
+            ./hadolint Dockerfile.
+  # Job to build and push frontend Docker image
+  build-app-karsajobs-ui:
+    docker:
+      # Official Docker image (for Docker-in-Docker operations)
+      - image: docker:stable
+    steps:
+      # Check out code
+      - checkout
+      # Set up Docker daemon (required for building images)
+      - setup_remote_docker
+      - run:
+          name: Build and Push Image
+          # Build Docker image and push to GitHub Container Registry
+          command: |
+            docker build -t ghcr.io/andiyudi/karsajobs-ui:latest .
+            echo "$PAT2" | docker login ghcr.io -u andiyudi --password-stdin
+            docker push ghcr.io/andiyudi/karsajobs-ui:latest
+# Workflow definition
+workflows:
+  version: 2
+  frontend-ci:
+    jobs:
+      # Jobs will run in parallel by default
+      - lint-dockerfile
+      - build-app-karsajobs-ui

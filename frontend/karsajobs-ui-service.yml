@@ -1,0 +1,21 @@
+# Versi API Kubernetes untuk objek Service
+apiVersion: v1
+# Jenis objek Kubernetes (Service untuk aplikasi frontend)
+kind: Service
+# Metadata Service
+metadata:
+  # Nama Service untuk frontend
+  name: karsajobs-ui-service
+# Spesifikasi Service
+spec:
+  # Selector untuk menemukan pod frontend yang akan di-expose
+  selector:
+    # Harus match dengan label pada pod frontend (karsajobs-ui)
+    app: karsajobs-ui
+  # Konfigurasi port
+  ports:
+    - protocol: TCP  # Protokol jaringan (TCP/UDP/SCTP)
+      port: 8000  # Port Service yang akan diakses dari dalam cluster
+      targetPort: 8000  # Port container pod yang menerima traffic (harus sama dengan containerPort di Deployment)
+  # Tipe Service (NodePort membuat aplikasi bisa diakses dari luar cluster)
+  type: NodePort

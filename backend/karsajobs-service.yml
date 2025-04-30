@@ -1,0 +1,22 @@
+# Versi API Kubernetes yang digunakan untuk Service
+apiVersion: v1
+# Tipe objek Kubernetes yang dibuat (Service)
+kind: Service
+# Bagian metadata untuk Service
+metadata:
+  # Nama Service
+  name: karsajobs-service
+# Spesifikasi Service
+spec:
+  # Selector untuk menemukan pod yang akan di-expose oleh Service ini
+  selector:
+    # Label selector yang harus cocok dengan label pod (sama dengan Deployment)
+    app: karsajobs
+  # Konfigurasi port Service
+  ports:
+    # Port pertama
+    - protocol: TCP  # Protokol jaringan yang digunakan (TCP/UDP)
+      port: 8080  # Port yang akan diexpose oleh Service
+      targetPort: 8080  # Port pada pod/container yang akan diakses
+  # Tipe Service (NodePort membuat Service dapat diakses dari luar cluster)
+  type: NodePort

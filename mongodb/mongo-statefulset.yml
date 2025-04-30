@@ -1,0 +1,46 @@
+# Versi API Kubernetes untuk StatefulSet
+apiVersion: apps/v1
+# Jenis objek Kubernetes (StatefulSet untuk database stateful)
+kind: StatefulSet
+metadata:
+  name: mongo-statefulset  # Nama StatefulSet
+spec:
+  serviceName: mongo-service  # Harus match dengan nama Headless Service
+  replicas: 1  # Jumlah replika pod (untuk production minimal 3)
+  selector:
+    matchLabels:
+      app: mongo  # Label selector untuk pod
+  template:
+    metadata:
+      labels:
+        app: mongo  # Label yang diterapkan ke pod
+    spec:
+      containers:
+      - name: mongo  # Nama container
+        image: mongo:4.4  # Image MongoDB dengan versi spesifik
+        ports:
+        - containerPort: 27017  # Port default MongoDB
+        env:
+        # Menggunakan _FILE untuk membaca credentials dari volume
+        - name: MONGO_INITDB_ROOT_USERNAME_FILE  # File berisi username
+          value: /etc/mongo-credentials/MONGO_ROOT_USERNAME
+        - name: MONGO_INITDB_ROOT_PASSWORD_FILE  # File berisi password
+          value: /etc/mongo-credentials/MONGO_ROOT_PASSWORD
+        volumeMounts:
+        - name: mongo-storage  # Volume untuk data persistent
+          mountPath: /data/db  # Lokasi standar MongoDB
+        - name: mongo-config  # Volume untuk config file
+          mountPath: /config
+        - name: mongo-secret  # Volume untuk credentials
+          mountPath: /etc/mongo-credentials
+          readOnly: true  # Best practice untuk volume secret
+      volumes:
+      - name: mongo-config  # Referensi ConfigMap
+        configMap:
+          name: mongo-config
+      - name: mongo-secret  # Referensi Secret
+        secret:
+          secretName: mongo-secret
+      - name: mongo-storage  # Referensi PersistentVolumeClaim
+        persistentVolumeClaim:
+          claimName: mongo-pvc # merujuk ke mongo-pv-pvc

@@ -1,0 +1,23 @@
+# --- Bagian PersistentVolume (PV) ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-pv  # Nama volume persistent
+spec:
+  capacity:
+    storage: 1Gi  # Kapasitas penyimpanan yang dialokasikan
+  accessModes:
+    - ReadWriteOnce  # Hanya bisa diakses baca/tulis oleh satu node
+  hostPath:
+    path: /data/db  # Lokasi direktori di host/node (Hanya untuk development!)
+# --- Bagian PersistentVolumeClaim (PVC) ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc  # Nama claim yang akan direferensikan oleh pod
+spec:
+  accessModes:
+    - ReadWriteOnce  # Mode akses harus match dengan PV
+  resources:
+    requests:
+      storage: 1Gi  # Request storage yang diminta (harus ≤ kapasitas PV)

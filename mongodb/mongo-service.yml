@@ -1,0 +1,16 @@
+# Versi API Kubernetes untuk objek Service
+apiVersion: v1
+# Jenis objek Kubernetes (Service untuk MongoDB)
+kind: Service
+# Metadata Service
+metadata:
+  name: mongo-service  # Nama service yang akan digunakan untuk DNS discovery
+spec:
+  # Selector untuk menemukan pod MongoDB
+  selector:
+    app: mongo  # Harus match dengan label pada pod MongoDB
+  ports:
+    - protocol: TCP  # MongoDB menggunakan protokol TCP
+      port: 27017    # Port service yang diekspos (standar MongoDB)
+      targetPort: 27017  # Port container MongoDB (harus sama dengan containerPort)
+  clusterIP: None  # Membuat Headless Service (penting untuk StatefulSet)

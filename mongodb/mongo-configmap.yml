@@ -1,0 +1,16 @@
+# Versi API Kubernetes untuk objek ConfigMap
+apiVersion: v1
+# Jenis objek Kubernetes (ConfigMap untuk konfigurasi)
+kind: ConfigMap
+# Metadata ConfigMap
+metadata:
+  # Nama ConfigMap (akan direferensikan oleh Deployment/StatefulSet)
+  name: mongo-config
+# Data konfigurasi yang akan disimpan
+data:
+  # Key untuk file konfigurasi MongoDB (nama file ketika dimount ke container)
+  # Konfigurasi YAML untuk MongoDB
+  # Lokasi penyimpanan data MongoDB dalam container
+  mongo.conf: |
+    storage:
+      dbPath: /data/db

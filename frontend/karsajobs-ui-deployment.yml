@@ -1,0 +1,37 @@
+# Versi API Kubernetes untuk objek Deployment
+apiVersion: apps/v1
+# Jenis objek Kubernetes (Deployment untuk aplikasi frontend)
+kind: Deployment
+# Metadata Deployment
+metadata:
+  # Nama Deployment untuk frontend
+  name: karsajobs-ui-deployment
+# Spesifikasi Deployment
+spec:
+  # Jumlah replika pod yang diinginkan (1 untuk development)
+  replicas: 1
+  # Selector untuk menemukan pod yang dikelola Deployment ini
+  selector:
+    matchLabels:
+      # Label selector untuk frontend
+      app: karsajobs-ui
+  # Template pod
+  template:
+    metadata:
+      labels:
+        # Label yang diterapkan ke pod frontend
+        app: karsajobs-ui
+    spec:
+      # Container dalam pod
+      containers:
+      - name: karsajobs-ui  # Nama container frontend
+        # Image container frontend dari GitHub Container Registry
+        image: ghcr.io/andiyudi/karsajobs-ui:latest  
+        ports:
+        # Port yang digunakan aplikasi frontend dalam container
+        - containerPort: 8000  
+        env:
+        # Variabel lingkungan untuk konfigurasi frontend
+        - name: "VUE_APP_BACKEND"  # Variabel yang digunakan Vue.js untuk API endpoint
+          # Nilai endpoint backend
+          value: "http://127.0.0.1:61874"

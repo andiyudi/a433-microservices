@@ -15,7 +15,7 @@ jobs:
           command: |
             curl -L https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 -o hadolint
             chmod +x hadolint
-            ./hadolint Dockerfile.
+            ./hadolint Dockerfile
   # Job to build and push frontend Docker image
   build-app-karsajobs-ui:
     docker:

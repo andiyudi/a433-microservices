@@ -14,4 +14,4 @@ RUN npm install --production
 EXPOSE 3000
 
 # Jalankan aplikasi Node.js
-CMD [ "node", "start" ]
+CMD [ "npm", "start" ]

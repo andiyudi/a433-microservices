@@ -7,6 +7,9 @@ WORKDIR /app
 # Salin seluruh kode aplikasi ke working directory
 COPY . .
 
+# Install dependensi sistem
+ENV NODE_ENV=production
+
 # Instal dependensi Node.js
 RUN npm install --production
 

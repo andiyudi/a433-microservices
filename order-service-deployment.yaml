@@ -1,0 +1,51 @@
+#Use API Version 1
+apiVersion: apps/v1
+kind: Deployment #Object type deployment
+# Metadata untuk deployment
+metadata:
+  name: order-service #Set name deployment
+spec: # spesifikasi
+  replicas: 1  #Set replicas Pod yang akan dijalankan
+  #Menggunakan selector untuk mengidentifikasi Pod
+  selector:
+    matchLabels:
+      # Penyesuaian berdasarkan pod nama label app
+      app: order-service
+  # Template Pod yang akan di-deploy oleh Deployment
+  template:
+    metadata:
+      labels:
+        app: order-service # metadata dengan label app
+    spec:
+      containers:
+      - name: order-service # Set name untuk container
+        # Image dan tag docker image yang digunakan
+        image: ghcr.io/andiyudi/order-service:v1.2
+        ports:
+        - containerPort: 3000 # Set port yang akan digunakan untuk mengakses container
+        env: # mendefinisikan environment variabel
+        - name: PORT
+          # Nilai untuk PORT
+          value: "3000"
+        - name : RABBITMQ_PASSWORD # set env var for RabbitMQ password
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq
+              key: rabbitmq-password
+        - name: AMQP_URL # nama environment variabel
+          value: "amqp://user:$(RABBITMQ_PASSWORD)@$(RABBITMQ_SERVICE_HOST):5672?frameMax=0x2000" # value environment variabel
+---
+#Apiversion 1
+apiVersion: v1
+kind: Service #Object type service
+metadata:
+  name: order-service #Set nama service
+  labels:
+    app: order-service #memiliki label yang sama denga Pod
+spec:
+  type: NodePort #memakai type NodePort
+  ports:
+  - port: 3000 # port yang ditentukan untuk service 3000
+  #Menggunakan selector untuk menargetkan Pod yang dibuat sebelumnya
+  selector:
+    app: order-service # selector untuk app order-service

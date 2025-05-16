@@ -1,0 +1,57 @@
+# API Version untuk resource Istio Networking
+apiVersion: networking.istio.io/v1alpha3  
+# Jenis resource adalah Gateway (pintu masuk traffic ke cluster)
+kind: Gateway  
+metadata:
+  # Nama resource Gateway ini
+  name: order-gateway  
+spec:
+  # Selektor untuk pod ingress gateway Istio
+  selector:
+    # Label selector untuk pod Istio Ingress Gateway default
+    istio: ingressgateway  
+  # Konfigurasi server yang akan ditangani gateway ini
+  servers:
+  - port:
+      # Nomor port yang akan didengarkan (80 untuk HTTP)
+      number: 80  
+      # Nama port untuk identifikasi
+      name: http  
+      # Protokol yang digunakan (HTTP)
+      protocol: HTTP  
+    # Daftar host/domain yang diterima oleh gateway ini
+    hosts:
+    # Tanda bintang (*) berarti menerima semua host/domain
+    - "*"  
+
+---
+# API Version untuk resource Istio Networking  
+apiVersion: networking.istio.io/v1alpha3  
+# Jenis resource adalah VirtualService (aturan routing traffic)
+kind: VirtualService  
+metadata:
+  # Nama VirtualService untuk layanan order
+  name: order-service  
+spec:
+  # Host yang berlaku untuk VirtualService ini
+  hosts:
+  # Tanda bintang (*) berarti berlaku untuk semua host
+  - "*"  
+  # Daftar gateway yang digunakan oleh VirtualService ini
+  gateways:
+  # Mengacu ke Gateway bernama order-gateway di atas
+  - order-gateway  
+  # Aturan routing untuk protokol HTTP
+  http:
+  - match:
+    - uri:
+        # Hanya cocok dengan path yang persis '/order' (bukan prefix)
+        exact: /order  
+    # Aturan routing untuk request yang match
+    route:
+    - destination:
+        # Nama lengkap Kubernetes Service tujuan
+        host: order-service 
+        port:
+          # Nomor port service tujuan
+          number: 3000  
